@@ -5,7 +5,7 @@ summary: Tabula-Java helps you liberate data tables trapped inside PDF files.
 description: |
   tabula-java provides a command line application:
   
-  usage: tabula [-a <AREA>] [-b <DIRECTORY>] [-c <COLUMNS>] [-f <FORMAT>]
+  usage: tabula-java [-a <AREA>] [-b <DIRECTORY>] [-c <COLUMNS>] [-f <FORMAT>]
        [-g] [-h] [-i] [-l] [-n] [-o <OUTFILE>] [-p <PAGES>] [-r] [-s
        <PASSWORD>] [-t] [-u] [-v]
 
@@ -67,7 +67,7 @@ environment:
   PATH: $PATH:$SNAP/usr/lib/jvm/java-11-openjdk-amd64/bin
 
 apps:
-  tabula:
+  tabula-java:
     command: tabula.sh
 #    extensions: [gnome-3-38]
 #    plugs:
