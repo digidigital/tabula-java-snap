@@ -1,28 +1,62 @@
-name: tabula
-title: Tabula
-version: '1.2.1'
+name: tabula-java
+title: Tabula-Java
+version: '1.0.5'
 summary: Tabula helps you liberate data tables trapped inside PDF files.
 description: |
-  If you’ve ever tried to do anything with data provided to you in PDFs,
-  you know how painful this is — you can’t easily copy-and-paste rows of
-  data out of PDF files. Tabula allows you to extract that data in CSV
-  format, through a simple web interface. 
-
-  Caveat - Tabula only works on text-based PDFs, not (image based) scanned 
-  documents. If you can click-and-drag to select text in your table in a 
-  PDF viewer (even if the output is disorganized trash), then your PDF is 
-  text-based and Tabula should work.
-
-  Security Concerns? Tabula is designed with security in mind. Your PDF 
-  and the extracted data never touch the net -- when you use Tabula on your 
-  local machine, as long as your browser's URL bar says "localhost" or
-  "127.0.0.1", all processing takes place on your local machine.
-  Even external version checks and the anonymous stats counter have been 
-  disabled in the snap.
+  tabula-java provides a command line application:
   
-  This snap starts a local web server and then automatically opens a
-  browser window. Close the terminal windows to stop the server.  
-  It is a community build without support by Tabula's authors.
+  usage: tabula [-a <AREA>] [-b <DIRECTORY>] [-c <COLUMNS>] [-f <FORMAT>]
+       [-g] [-h] [-i] [-l] [-n] [-o <OUTFILE>] [-p <PAGES>] [-r] [-s
+       <PASSWORD>] [-t] [-u] [-v]
+
+ Tabula helps you extract tables from PDFs
+
+ -a,--area <AREA>           -a/--area = Portion of the page to analyze.
+                            Example: --area 269.875,12.75,790.5,561.
+                            Accepts top,left,bottom,right i.e. y1,x1,y2,x2
+                            where all values are in points relative to the
+                            top left corner. If all values are between
+                            0-100 (inclusive) and preceded by '%', input
+                            will be taken as % of actual height or width
+                            of the page. Example: --area %0,0,100,50. To
+                            specify multiple areas, -a option should be
+                            repeated. Default is entire page
+ -b,--batch <DIRECTORY>     Convert all .pdfs in the provided directory.
+ -c,--columns <COLUMNS>     X coordinates of column boundaries. Example
+                            --columns 10.1,20.2,30.3. If all values are
+                            between 0-100 (inclusive) and preceded by '%',
+                            input will be taken as % of actual width of
+                            the page. Example: --columns %25,50,80.6
+ -f,--format <FORMAT>       Output format: (CSV,TSV,JSON). Default: CSV
+ -g,--guess                 Guess the portion of the page to analyze per
+                            page.
+ -h,--help                  Print this help text.
+ -i,--silent                Suppress all stderr output.
+ -l,--lattice               Force PDF to be extracted using lattice-mode
+                            extraction (if there are ruling lines
+                            separating each cell, as in a PDF of an Excel
+                            spreadsheet)
+ -n,--no-spreadsheet        [Deprecated in favor of -t/--stream] Force PDF
+                            not to be extracted using spreadsheet-style
+                            extraction (if there are no ruling lines
+                            separating each cell)
+ -o,--outfile <OUTFILE>     Write output to <file> instead of STDOUT.
+                            Default: -
+ -p,--pages <PAGES>         Comma separated list of ranges, or all.
+                            Examples: --pages 1-3,5-7, --pages 3 or
+                            --pages all. Default is --pages 1
+ -r,--spreadsheet           [Deprecated in favor of -l/--lattice] Force
+                            PDF to be extracted using spreadsheet-style
+                            extraction (if there are ruling lines
+                            separating each cell, as in a PDF of an Excel
+                            spreadsheet)
+ -s,--password <PASSWORD>   Password to decrypt document. Default is empty
+ -t,--stream                Force PDF to be extracted using stream-mode
+                            extraction (if there are no ruling lines
+                            separating each cell)
+ -u,--use-line-returns      Use embedded line returns in cells. (Only in
+                            spreadsheet mode.)
+ -v,--version               Print version and exit.
 base: core20  
 grade: stable 
 confinement: strict
@@ -33,19 +67,30 @@ environment:
   PATH: $PATH:$SNAP/usr/lib/jvm/java-11-openjdk-amd64/bin
 
 apps:
-  tabula-server:
-    command: tabula.sh
+  tabula:
+    command: tabula.sh https://github.com/tabulapdf/tabula-java
+#    extensions: [gnome-3-38]
+#    plugs:
+#      - network
+#      - network-bind
+
+  tabula-link:
+    command: tabula-link.sh
     desktop: $SNAPCRAFT_PROJECT_DIR/tabula-desktop/tabula.desktop
     extensions: [gnome-3-38]
-    plugs:
-      - network
-      - network-bind
+#   plugs:
+#     - network
+#     - network-bind
 
 parts:
-  get-source:
-    plugin: dump
-    source: https://github.com/tabulapdf/tabula/releases/download/v1.2.1/tabula-jar-1.2.1.zip
-    source-type: zip
+  get-jar:
+    plugin: nil 
+    override-pull: |
+      wget https://github.com/tabulapdf/tabula-java/releases/download/v1.0.5/tabula-1.0.5-jar-with-dependencies.jar
+    override-build: |
+      cp tabula-1.0.5-jar-with-dependencies.jar $SNAPCRAFT_PART_INSTALL/tabula-1.0.5-jar-with-dependencies.jar
+      #chmod +x file.ext
+      #./file.ext # if this is a script it needs to install files to $SNAPCRAFT_PART_INSTALL
   get-desktop:
     plugin: dump
     source: https://github.com/digidigital/tabula-snap/raw/main/tabula-desktop.zip
@@ -65,6 +110,9 @@ parts:
       snapcraftctl prime
       echo '(trap 'kill 0' SIGINT; (wget -tries=20 --retry-connrefused http://127.0.0.1:9999 --waitretry=1 -q -P /dev/null ; xdg-open http://127.0.0.1:9999) & java -Dfile.encoding=utf-8 -Xms256M -Xmx1024M -Dtabula.disable_version_check=1 -Dtabula.disable_notifications=1 -Dwarbler.port=9999 -jar $SNAP/tabula/tabula.jar)' > tabula.sh
       chmod +x tabula.sh
+      
+      echo 'xdg-open https://github.com/tabulapdf/tabula-java' > tabula-link.sh
+      chmod +x tabula-link.sh
 
 layout:
   /etc/wgetrc:
