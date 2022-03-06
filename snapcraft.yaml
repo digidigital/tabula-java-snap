@@ -1,7 +1,7 @@
 name: tabula-java
 title: Tabula-Java
 version: '1.0.5'
-summary: Tabula helps you liberate data tables trapped inside PDF files.
+summary: Tabula-Java helps you liberate data tables trapped inside PDF files.
 description: |
   tabula-java provides a command line application:
   
@@ -89,8 +89,7 @@ parts:
       wget https://github.com/tabulapdf/tabula-java/releases/download/v1.0.5/tabula-1.0.5-jar-with-dependencies.jar
     override-build: |
       cp tabula-1.0.5-jar-with-dependencies.jar $SNAPCRAFT_PART_INSTALL/tabula-1.0.5-jar-with-dependencies.jar
-      #chmod +x file.ext
-      #./file.ext # if this is a script it needs to install files to $SNAPCRAFT_PART_INSTALL
+
   get-desktop:
     plugin: dump
     source: https://github.com/digidigital/tabula-java-snap/raw/main/tabula-desktop.zip
@@ -113,7 +112,3 @@ parts:
       
       echo 'xdg-open https://github.com/tabulapdf/tabula-java' > tabula-link.sh
       chmod +x tabula-link.sh
-
-layout:
-  /etc/wgetrc:
-    bind-file: $SNAP/etc/wgetrc
