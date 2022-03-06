@@ -93,7 +93,7 @@ parts:
       #./file.ext # if this is a script it needs to install files to $SNAPCRAFT_PART_INSTALL
   get-desktop:
     plugin: dump
-    source: https://github.com/digidigital/tabula-snap/raw/main/tabula-desktop.zip
+    source: https://github.com/digidigital/tabula-java-snap/raw/main/tabula-desktop.zip
     source-type: zip
   packages:
     plugin: nil
