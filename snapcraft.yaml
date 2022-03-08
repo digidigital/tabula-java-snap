@@ -21,7 +21,7 @@ architectures: [amd64]
 compression: lzo
 license: MIT
 environment:
-JAVA_HOME: $SNAP/usr/lib/jvm/java-8-openjdk-amd64/bin
+  JAVA_HOME: $SNAP/usr/lib/jvm/java-8-openjdk-amd64/bin
   PATH: $SNAP/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH
 
 apps:
@@ -35,23 +35,19 @@ apps:
 parts:
   get-jar:
     plugin: nil 
+    build-packages:
+      - wget
     override-build: |
       wget https://github.com/tabulapdf/tabula-java/releases/download/v1.0.5/tabula-1.0.5-jar-with-dependencies.jar
       cp tabula-1.0.5-jar-with-dependencies.jar $SNAPCRAFT_PART_INSTALL/tabula-1.0.5-jar-with-dependencies.jar
-    build-packages:
-      - wget
-
+    override-prime: |
+        snapcraftctl prime
+        echo 'java -jar $SNAP/tabula-1.0.5-jar-with-dependencies.jar "$@"' > tabula.sh
+        chmod +x tabula.sh
+  
   packages:
     plugin: nil
     stage-packages:  
       - openjdk-8-jre
       - ca-certificates
       - ca-certificates-java
-#    build-packages:
-#      - ca-certificates
-#      - ca-certificates-java
-
-    override-prime: |
-      snapcraftctl prime
-      echo 'java -jar $SNAP/tabula-1.0.5-jar-with-dependencies.jar "$@"' > tabula.sh
-      chmod +x tabula.sh
