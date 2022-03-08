@@ -21,6 +21,7 @@ architectures: [amd64]
 compression: lzo
 license: MIT
 environment:
+JAVA_HOME: $SNAP/usr/lib/jvm/java-8-openjdk-amd64/bin
   PATH: $SNAP/usr/lib/jvm/java-8-openjdk-amd64/bin:$PATH
 
 apps:
@@ -46,10 +47,9 @@ parts:
       - openjdk-8-jre
       - ca-certificates
       - ca-certificates-java
-    build-packages:
-      - openjdk-8-jre
-      - ca-certificates
-      - ca-certificates-java
+#    build-packages:
+#      - ca-certificates
+#      - ca-certificates-java
 
     override-prime: |
       snapcraftctl prime
