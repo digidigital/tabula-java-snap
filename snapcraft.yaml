@@ -44,7 +44,8 @@ parts:
         snapcraftctl prime
         echo 'java -jar $SNAP/tabula-1.0.5-jar-with-dependencies.jar "$@"' > tabula.sh
         chmod +x tabula.sh
-  
+        
+        rm -rf $SNAPCRAFT_PRIME/usr/lib/jvm/java-11-openjdk-amd64
   packages:
     plugin: nil
     stage-packages:  
